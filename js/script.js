@@ -8,7 +8,7 @@ var fiveDayHeaderEl = $('.five-day-header');
 var RecentSearch =  $('.card-recent');
 var APIKey = '6f092801568446709287b96be65ed97a';
 
-
+var uvi;
 
 function init(){
     renderSearchedCities();
@@ -67,8 +67,8 @@ var getTodayWeather = function (city) {
             console.log(data);
             var lat = data.coord.lat;
             var lon = data.coord.lon;
-            displayTodayWeather(data);
             getFutureWeather(lat,lon);
+            displayTodayWeather(data);
             saveRecentSearch(city)
           });
         } else {
@@ -94,9 +94,9 @@ function saveRecentSearch(city){
     localStorage.setItem("cities", JSON.stringify(searchedCity));
 }
 
-
-function displayTodayWeather(data) {
-    var weatherDisplayAttr = {'color':'white', 'font-weight': '500', 'font-size': '1.2rem'};
+var weatherDisplayAttr = {'color':'white', 'font-weight': '500', 'font-size': '1.2rem'};
+function displayTodayWeather(data,uvi) {
+    // var weatherDisplayAttr = {'color':'white', 'font-weight': '500', 'font-size': '1.2rem'};
     // todayWeatherContainer.css({'border': '3px solid #466786','border-radius': '.3rem', 'background-color':'rgb(15, 144, 153)', 'height': '72%', 'padding': '10px'});
     todayWeatherEl.css({'border': '3px solid #466786','border-radius': '.3rem', 'background-color':'rgb(15, 144, 153)', 'height': '72%', 'padding': '10px'});
 
@@ -114,7 +114,9 @@ function displayTodayWeather(data) {
     var sunsetTime = moment.unix(data.sys.sunset).format('h:mm A');
     todayWeatherEl.append($('<h3>').text('Sunrise: ' + sunriseTime).css(weatherDisplayAttr));
     todayWeatherEl.append($('<h3>').text('Sunset: ' + sunsetTime).css(weatherDisplayAttr));
+    // todayWeatherEl.append('<h3>').text('UV Index: ').attr({'class':'uv'});
 };
+
 
 function getFutureWeather(lat,lon){
     var queryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + APIKey +"&exclude=minutely,hourly,alerts" + "&units=imperial";
@@ -125,6 +127,20 @@ function getFutureWeather(lat,lon){
           response.json().then(function (data) {
             console.log(data);
             displayFiveDayWeather(data);
+            var uvi = data.current.uvi; 
+            todayWeatherEl.append($('<h3>').text('UV Index: ').css(weatherDisplayAttr));
+            todayWeatherEl.append($('<button>').text(uvi).attr({'class':'uvi-btn', 'display':'inline-block'}));
+            if (uvi < 3){
+                $('.uvi-btn').css({'background':'green','width': '10%','color':'white'})
+            } else if (uvi<6){
+                $('.uvi-btn').css({'background':'yellow','width': '10%','color':'white'})
+            } else if (uvi<8){
+                $('.uvi-btn').css({'background':'orange','width': '10%','color':'white'})
+            } else if (uvi<11){
+                $('.uvi-btn').css({'background':'red','width': '10%','color':'white'})
+            } else {
+                $('.uvi-btn').css({'background':'purple','width': '10%','color':'white'})
+            }
           });
         } else {
           alert('Error: ' + response.statusText);
