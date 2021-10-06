@@ -177,7 +177,7 @@ padding: 10px;
     justify-content: space-between;
 }
 
-.weather-card {
+/* .weather-card {
     flex: 1 0 0;
     padding: 10px;
     text-align: center;
@@ -185,4 +185,5 @@ padding: 10px;
     border-width: 1px;
     width: 50%;
     height: 50%;
-  }
+  } */
+
