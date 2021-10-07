@@ -45,20 +45,7 @@ font-size: 1.2rem;
 }
 
 
-/* body {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    line-height: 1;
-  } */
-/*   
-  textarea {
-    background: transparent;
-    border: none;
-    resize: none;
-    color: #000000;
-    border-left: 1px solid black;
-    padding: 10px;
-  } */
+
   
 .app-title {
 text-align: center;
@@ -143,23 +130,6 @@ padding: 10px;
   border-radius: var(--border-radius);
 }
 
-/* .list-group {
-    padding: 0;
-    list-style: none;
-}
-  
-.list-item {
-    margin-bottom: 10px;
-    padding: 1.5%;
-    border-radius: var(--border-radius);
-    background-color: var(--light-dark);
-    color: var(--primary);
-    text-decoration: none;
-}
-  
-.list-item:hover {
-    background-color: var(--dark);
-} */
 
 /* FLEX CONTENT */
 .flex-row {
@@ -177,13 +147,5 @@ padding: 10px;
     justify-content: space-between;
 }
 
-/* .weather-card {
-    flex: 1 0 0;
-    padding: 10px;
-    text-align: center;
-    border-style: solid;
-    border-width: 1px;
-    width: 50%;
-    height: 50%;
-  } */
+
 

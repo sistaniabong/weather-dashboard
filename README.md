@@ -31,15 +31,14 @@ THEN I am again presented with current and future conditions for that city
 
 ## Features
 This weather dashboard application includes the following features:
-- search for a weahter condition of a city 
+- search for a weather condition of a city 
 - show today's weather and weather for five days ahead 
 - keep recent search of cities for user to easily search for that city again
 
 
 ## Mock-Up
 The following GIF displays the web application's appearance and functionality:
-To be added
-<!-- ![day planner demo](TBD) -->
+![weather dashboard demo](./images/weather-dashboard.gif)
 
 
 ## Review

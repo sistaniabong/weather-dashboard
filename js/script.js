@@ -2,11 +2,11 @@ var cityFormEl = $('#user-form'); //form element
 var cityInputEl = $('#city'); //form city input elemet
 var WeatherContainer = $('.weather-container'); //container to display today weather
 var todayWeatherEl = $('.today-weather'); //element to display today weather
-var fiveDayWeatherContainer = $('.five-day-weather-container'); //element to display today weather
+var fiveDayWeatherContainer = $('.five-day-weather-container'); //element to display five day forecast 
 var fiveDayWeatherEl = $('.five-day-weather');
 var fiveDayHeaderEl = $('.five-day-header');
-var RecentSearch =  $('.card-recent');
-var APIKey = '6f092801568446709287b96be65ed97a';
+var RecentSearch =  $('.city-recent');
+var APIKey = '6f092801568446709287b96be65ed97a'; //api key 
 
 var uvi;
 
@@ -14,49 +14,61 @@ function init(){
     renderSearchedCities();
 }
 
+//fx to render the recent cities that were searched
 function renderSearchedCities(){
     var cities = JSON.parse(localStorage.getItem('cities'));
 
     if (cities){
-        for (var i=0;i<cities.length;i++){
-            var city = $('<button>').text(cities[i]).attr({'class':'btn', 'id': cities[i]});
+        RecentSearch.empty();
+        var myNewCities = cities.filter(function(elem, index, self) {
+            return index === self.indexOf(elem);
+        });
+        console.log(myNewCities);
+        for (var i=0;i<myNewCities.length;i++){
+            var city = $('<input>').attr({'value':myNewCities[i],'class':'btn' ,'id':myNewCities[i]});
             RecentSearch.append(city);
-            $('#'+ cities[i]).on('click',recentSearchHandler);
+            $('#'+myNewCities[i]).on('click',recentSearchHandler);
         }
     }   
 }
 
-
+// fx to enable API call when  the recent city button is clicked
 var recentSearchHandler = function () {
   
-    console.log('city to search for: ' + $(this).text());
-    var city = $(this).text();
+    console.log('city to search for: ' + $(this).val());
+    var city = $(this).val();
     
     if (city) {
-        todayWeatherEl.textContent = '';
-        cityInputEl.val('');
         getTodayWeather(city);
+        cityInputEl.val('');
+        todayWeatherEl.text('');
+        fiveDayHeaderEl.text('');
+        fiveDayWeatherEl.text('');
     }
-    return;
 };
 
+
+//fx that gets run when a city is submitted for a search
 var formSubmitHandler = function (event) {
     event.preventDefault();
+    // WeatherContainer.text('');
   
     var city = cityInputEl.val();
     console.log('city to search for: ' + city);
   
     if (city) {
-        todayWeatherEl.textContent = '';
-        cityInputEl.val('');
         getTodayWeather(city);
+        cityInputEl.val('');
+        todayWeatherEl.text('');
+        fiveDayHeaderEl.text('');
+        fiveDayWeatherEl.text('');
     } else {
       alert('Please enter a city');
     }
 };
 
 
-
+// fx that get today weather
 var getTodayWeather = function (city) {
     var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIKey + "&units=imperial";
   
@@ -67,19 +79,20 @@ var getTodayWeather = function (city) {
             console.log(data);
             var lat = data.coord.lat;
             var lon = data.coord.lon;
-            getFutureWeather(lat,lon);
             displayTodayWeather(data);
-            saveRecentSearch(city)
+            getFutureWeather(lat,lon);
+            saveRecentSearch(city);
           });
         } else {
           alert('Error: ' + response.statusText);
         }
       })
       .catch(function (error) {
-        alert('Unable to connect to GitHub');
+        alert('Unable to connect to OpenWeather');
       });
   };
 
+// fx that save cities that were recently searched in local storage
 function saveRecentSearch(city){
     const searchedCity = (() => {
         const cities = localStorage.getItem('cities');
@@ -91,13 +104,13 @@ function saveRecentSearch(city){
         searchedCity.push(city)
     }
 
-    localStorage.setItem("cities", JSON.stringify(searchedCity));
+    localStorage.setItem("cities", JSON.stringify(searchedCity)); 
+    renderSearchedCities();
 }
 
+// fx that displays today's weather
 var weatherDisplayAttr = {'color':'white', 'font-weight': '500', 'font-size': '1.2rem'};
 function displayTodayWeather(data,uvi) {
-    // var weatherDisplayAttr = {'color':'white', 'font-weight': '500', 'font-size': '1.2rem'};
-    // todayWeatherContainer.css({'border': '3px solid #466786','border-radius': '.3rem', 'background-color':'rgb(15, 144, 153)', 'height': '72%', 'padding': '10px'});
     todayWeatherEl.css({'border': '3px solid #466786','border-radius': '.3rem', 'background-color':'rgb(15, 144, 153)', 'height': '72%', 'padding': '10px'});
 
     var dateString = moment.unix(data.dt).format('dddd, MMMM Do YYYY');
@@ -114,10 +127,9 @@ function displayTodayWeather(data,uvi) {
     var sunsetTime = moment.unix(data.sys.sunset).format('h:mm A');
     todayWeatherEl.append($('<h3>').text('Sunrise: ' + sunriseTime).css(weatherDisplayAttr));
     todayWeatherEl.append($('<h3>').text('Sunset: ' + sunsetTime).css(weatherDisplayAttr));
-    // todayWeatherEl.append('<h3>').text('UV Index: ').attr({'class':'uv'});
 };
 
-
+// fx that get 5 day forecast 
 function getFutureWeather(lat,lon){
     var queryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + APIKey +"&exclude=minutely,hourly,alerts" + "&units=imperial";
         
@@ -128,6 +140,7 @@ function getFutureWeather(lat,lon){
             console.log(data);
             displayFiveDayWeather(data);
             var uvi = data.current.uvi; 
+            console.log(uvi);
             todayWeatherEl.append($('<h3>').text('UV Index: ').css(weatherDisplayAttr));
             todayWeatherEl.append($('<button>').text(uvi).attr({'class':'uvi-btn', 'display':'inline-block'}));
             if (uvi < 3){
@@ -151,6 +164,7 @@ function getFutureWeather(lat,lon){
       });
 }
 
+// fx that displays 5-day forecast
 function displayFiveDayWeather(data){
     var dailyWeather = data.daily;
     console.log(dailyWeather);
